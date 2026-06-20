@@ -3,53 +3,45 @@ package cl.vincalia.pedidos_service.controller;
 import cl.vincalia.pedidos_service.dto.PedidoDTO;
 import cl.vincalia.pedidos_service.dto.PedidoRequestDTO;
 import cl.vincalia.pedidos_service.service.PedidoService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
-@RequiredArgsConstructor
+@Tag(name = "Pedidos", description = "Endpoints para la gestión integral de pedidos")
 public class PedidoController {
 
-    private final PedidoService service;
+    private final PedidoService pedidoService;
 
-    @PostMapping
-    public ResponseEntity<PedidoDTO> crear(@Valid @RequestBody PedidoRequestDTO request) {
-        return new ResponseEntity<>(service.crearPedido(request), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(service.obtenerPorId(id));
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<PedidoDTO>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    @Operation(summary = "Listar todos los pedidos", description = "Obtiene una lista completa de todos los pedidos registrados en el sistema.")
+    @ApiResponse(responseCode = "200", description = "Lista de pedidos obtenida exitosamente")
+    public List<PedidoDTO> listarPedidos() {
+        return pedidoService.findAll();
     }
 
-    @PutMapping("/{id}/total")
-    public ResponseEntity<PedidoDTO> actualizarTotal(@PathVariable Long id, @RequestParam Double total) {
-        return ResponseEntity.ok(service.actualizarTotal(id, total));
+    @PostMapping
+    @Operation(summary = "Crear un nuevo pedido", description = "Registra un nuevo pedido asociado a un cliente.")
+    @ApiResponse(responseCode = "201", description = "Pedido creado con éxito")
+    public PedidoDTO crearPedido(@RequestBody PedidoRequestDTO pedidoRequest) {
+        return pedidoService.create(pedidoRequest);
     }
 
-    // REPORTES
-    @GetMapping("/reportes/cliente/{clienteId}")
-    public ResponseEntity<List<PedidoDTO>> getByCliente(@PathVariable Long clienteId) {
-        return ResponseEntity.ok(service.findByCliente(clienteId));
-    }
-
-    @GetMapping("/reportes/fechas")
-    public ResponseEntity<List<PedidoDTO>> getByFechas(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin) {
-        return ResponseEntity.ok(service.findByFechaRange(inicio, fin));
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener pedido por ID", description = "Busca un pedido específico mediante su identificador único.")
+    @ApiResponse(responseCode = "200", description = "Pedido encontrado")
+    @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
+    public PedidoDTO obtenerPorId(
+            @Parameter(description = "ID único del pedido") @PathVariable Long id) {
+        return pedidoService.findById(id);
     }
 }
