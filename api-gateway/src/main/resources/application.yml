@@ -1,0 +1,40 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    gateway:
+      routes:
+        # RUTA PARA EL CATÁLOGO
+        - id: catalogo-service
+          uri: lb://catalogo-service
+          predicates:
+            - Path=/api/productos/**, /v3/api-docs/catalogo
+          filters:
+            - RewritePath=/v3/api-docs/catalogo, /v3/api-docs
+
+        # RUTA PARA CLIENTES (Para cuando lo levantes)
+        - id: clientes-service
+          uri: lb://clientes-service
+          predicates:
+            - Path=/api/clientes/**, /v3/api-docs/clientes
+          filters:
+            - RewritePath=/v3/api-docs/clientes, /v3/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Catalogo
+        url: /v3/api-docs/catalogo
+      - name: Clientes
+        url: /v3/api-docs/clientes

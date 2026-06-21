@@ -3,6 +3,14 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
+        <module name="eureka-server" />
+        <module name="catalogo-service" />
+      </profile>
       <profile name="Annotation profile for proveedores-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -12,14 +20,11 @@
         </processorPath>
         <module name="delivery-service" />
         <module name="config-server" />
-        <module name="catalogo-service" />
         <module name="cupones-service" />
         <module name="proveedores-service" />
         <module name="pagos-service" />
         <module name="pedidos-service" />
         <module name="clientes-service" />
-        <module name="api-gateway" />
-        <module name="eureka-server" />
         <module name="inventario-service" />
       </profile>
     </annotationProcessing>
