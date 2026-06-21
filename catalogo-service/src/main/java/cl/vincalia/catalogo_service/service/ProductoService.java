@@ -23,7 +23,6 @@ public class ProductoService {
 
     @Transactional
     public ProductoDTO crear(ProductoRequestDTO request) {
-        // Validar nombre único
         if (repository.findByNombreContainingIgnoreCase(request.getNombre()).stream()
                 .anyMatch(p -> p.getNombre().equalsIgnoreCase(request.getNombre()))) {
             throw new DuplicateResourceException("Ya existe un producto con nombre: " + request.getNombre());
@@ -49,7 +48,6 @@ public class ProductoService {
         Producto existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-        // Validar nombre único (excluyéndose a sí mismo)
         if (!existing.getNombre().equalsIgnoreCase(request.getNombre()) &&
                 repository.findByNombreContainingIgnoreCase(request.getNombre()).stream()
                         .anyMatch(p -> p.getNombre().equalsIgnoreCase(request.getNombre()))) {
@@ -89,5 +87,32 @@ public class ProductoService {
 
     public List<ProductoDTO> findStockBajo(Integer limite) {
         return repository.findByStockLessThan(limite).stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+    // ========== MÉTODOS PARA TESTING (UNITARIOS) ==========
+
+    @Transactional
+    public Double calcularTotal(List<Long> ids) {
+        Double total = 0.0;
+        for (Long id : ids) {
+            Producto p = repository.findById(id).orElse(null);
+            if (p != null) {
+                total += p.getPrecio();
+            }
+        }
+        return total;
+    }
+
+    @Transactional
+    public void venderProducto(Long id, Integer cantidad) {
+        Producto p = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (p.getStock() < cantidad) {
+            throw new RuntimeException("No hay stock suficiente");
+        }
+
+        p.setStock(p.getStock() - cantidad);
+        repository.save(p);
     }
 }
