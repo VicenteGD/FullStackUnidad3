@@ -4,27 +4,35 @@ server:
 spring:
   application:
     name: api-gateway
-  # SOLUCIÓN AL ERROR DE ARRANQUE: Hace que la búsqueda del Config Server sea opcional
+  # SOLUCIÓN: Cambiamos localhost por config-server (nombre en Docker Compose)
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://config-server:8888
   cloud:
     gateway:
-      server:
-        webflux:
-          routes:
-            # RUTA PARA EL CATÁLOGO (API + DOCUMENTACIÓN)
-            - id: catalogo-service
-              uri: lb://catalogo-service
-              predicates:
-                - Path=/api/productos/**, /v3/api-docs/catalogo
-              filters:
-                # Traducción de ruta: de /v3/api-docs/catalogo a /v3/api-docs
-                - RewritePath=/v3/api-docs/catalogo, /v3/api-docs
+      routes:
+        # RUTA PARA EL CATÁLOGO (API + DOCUMENTACIÓN)
+        - id: catalogo-service
+          uri: lb://catalogo-service
+          predicates:
+            - Path=/api/productos/**, /v3/api-docs/catalogo
+          filters:
+            - RewritePath=/v3/api-docs/catalogo, /v3/api-docs
+
+        # EJEMPLO PARA EL FUTURO: Así agregarás el de Clientes u otros
+        # - id: clientes-service
+        #   uri: lb://clientes-service
+        #   predicates:
+        #     - Path=/api/clientes/**, /v3/api-docs/clientes
+        #   filters:
+        #     - RewritePath=/v3/api-docs/clientes, /v3/api-docs
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      # SOLUCIÓN: Cambiamos localhost por eureka (nombre en Docker Compose)
+      defaultZone: http://eureka:8761/eureka/
 
 # CONFIGURACIÓN DE SWAGGER CENTRALIZADO
 springdoc:
@@ -33,3 +41,5 @@ springdoc:
     urls:
       - name: Catalogo
         url: /v3/api-docs/catalogo
+      # - name: Clientes
+      #   url: /v3/api-docs/clientes

@@ -1,0 +1,174 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql_database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+
+  eureka:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka
+    ports:
+      - "8761:8761"
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+    depends_on:
+      - config-server
+      - eureka
+      - catalogo-service
+      - clientes-service
+      - cupones-service
+      - delivery-service
+      - inventario-service
+      - pagos-service
+      - pedidos-service
+      - proveedores-service
+
+  catalogo-service:
+    build:
+      context: ./catalogo-service
+      dockerfile: Dockerfile
+    container_name: catalogo
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  clientes-service:
+    build:
+      context: ./clientes-service
+      dockerfile: Dockerfile
+    container_name: clientes
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  cupones-service:
+    build:
+      context: ./cupones-service
+      dockerfile: Dockerfile
+    container_name: cupones
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  delivery-service:
+    build:
+      context: ./delivery-service
+      dockerfile: Dockerfile
+    container_name: delivery
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  inventario-service:
+    build:
+      context: ./inventario-service
+      dockerfile: Dockerfile
+    container_name: inventario
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  pagos-service:
+    build:
+      context: ./pagos-service
+      dockerfile: Dockerfile
+    container_name: pagos
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  pedidos-service:
+    build:
+      context: ./pedidos-service
+      dockerfile: Dockerfile
+    container_name: pedidos
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+  proveedores-service:
+    build:
+      context: ./proveedores-service
+      dockerfile: Dockerfile
+    container_name: proveedores
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+      - eureka
+
+volumes:
+  mysql_data:
