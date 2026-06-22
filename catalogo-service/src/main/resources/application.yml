@@ -6,8 +6,11 @@ spring:
     name: catalogo-service
   config:
     import: optional:configserver:http://localhost:8888
+  # AÑADE ESTE BLOQUE DE FLYWAY SÍ O SÍ:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
   datasource:
-    # Apunta al puerto 3307 que es el que mapeó Docker hacia tu máquina local
     url: jdbc:mysql://localhost:3307/vincalia_db?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: root
     password: root
