@@ -71,7 +71,7 @@ spring:
                 - RewritePath=/v3/api-docs/proveedores, /v3/api-docs
 
 server:
-  port: 8080 # Puerto principal del Gateway por donde entrará todo el tráfico
+  port: 9090 # Puerto principal del Gateway por donde entrará todo el tráfico
 
 eureka:
   client:
