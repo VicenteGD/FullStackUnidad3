@@ -13,8 +13,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 				description = "Microservicio encargado de gestionar los productos disponibles y el inventario del catálogo.",
 				version = "1.0.0",
 				contact = @Contact(
-						name = "Vicho",
-						email = "vicho@tu-correo.com"
+						name = "Vicente Garrido",
+						email = "vi.garridod@duocuc.cl"
 				)
 		)
 )

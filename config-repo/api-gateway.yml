@@ -1,0 +1,112 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            # 1. Catalogo Service
+            - id: catalogo-service
+              uri: lb://catalogo-service
+              predicates:
+                - Path=/productos/**,/v3/api-docs/catalogo
+              filters:
+                - RewritePath=/v3/api-docs/catalogo, /v3/api-docs
+
+            # 2. Clientes Service
+            - id: clientes-service
+              uri: lb://clientes-service
+              predicates:
+                - Path=/clientes/**,/v3/api-docs/clientes
+              filters:
+                - RewritePath=/v3/api-docs/clientes, /v3/api-docs
+
+            # 3. Cupones Service
+            - id: cupones-service
+              uri: lb://cupones-service
+              predicates:
+                - Path=/cupones/**,/v3/api-docs/cupones
+              filters:
+                - RewritePath=/v3/api-docs/cupones, /v3/api-docs
+
+            # 4. Delivery Service
+            - id: delivery-service
+              uri: lb://delivery-service
+              predicates:
+                - Path=/entregas/**,/v3/api-docs/delivery
+              filters:
+                - RewritePath=/v3/api-docs/delivery, /v3/api-docs
+
+            # 5. Inventario Service
+            - id: inventario-service
+              uri: lb://inventario-service
+              predicates:
+                - Path=/ingredientes/**,/v3/api-docs/inventario
+              filters:
+                - RewritePath=/v3/api-docs/inventario, /v3/api-docs
+
+            # 6. Pagos Service
+            - id: pagos-service
+              uri: lb://pagos-service
+              predicates:
+                - Path=/pagos/**,/v3/api-docs/pagos
+              filters:
+                - RewritePath=/v3/api-docs/pagos, /v3/api-docs
+
+            # 7. Pedidos Service
+            - id: pedidos-service
+              uri: lb://pedidos-service
+              predicates:
+                - Path=/pedidos/**,/v3/api-docs/pedidos
+              filters:
+                - RewritePath=/v3/api-docs/pedidos, /v3/api-docs
+
+            # 8. Proveedores Service
+            - id: proveedores-service
+              uri: lb://proveedores-service
+              predicates:
+                - Path=/proveedores/**,/v3/api-docs/proveedores
+              filters:
+                - RewritePath=/v3/api-docs/proveedores, /v3/api-docs
+
+server:
+  port: 8080 # Puerto principal del Gateway por donde entrará todo el tráfico
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+# Configuración del Swagger-UI unificado en la raíz del Gateway
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: 1. Catálogo de Productos
+        url: /v3/api-docs/catalogo
+      - name: 2. Gestión de Clientes
+        url: /v3/api-docs/clientes
+      - name: 3. Sistema de Cupones
+        url: /v3/api-docs/cupones
+      - name: 4. Módulo de Delivery
+        url: /v3/api-docs/delivery
+      - name: 5. Control de Inventario
+        url: /v3/api-docs/inventario
+      - name: 6. Pasarela de Pagos
+        url: /v3/api-docs/pagos
+      - name: 7. Órdenes y Pedidos
+        url: /v3/api-docs/pedidos
+      - name: 8. Administración de Proveedores
+        url: /v3/api-docs/proveedores
+
+# Exposición de Actuator para comprobar la salud de las rutas
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

@@ -1,0 +1,29 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-service
+  output:
+    ansi:
+      enabled: always
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Eureka no debe buscarse a sí mismo
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+---
+# PERFIL PARA DOCKER
+spring:
+  config:
+    activate:
+      on-profile: docker
+eureka:
+  instance:
+    hostname: eureka-service

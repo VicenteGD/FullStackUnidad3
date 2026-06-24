@@ -1,35 +1,5 @@
-server:
-  port: 9090
-
 spring:
   application:
     name: api-gateway
-  # SOLUCIÓN AL ERROR DE ARRANQUE: Hace que la búsqueda del Config Server sea opcional
   config:
-    import: optional:configserver:http://localhost:8888
-  cloud:
-    gateway:
-      server:
-        webflux:
-          routes:
-            # RUTA PARA EL CATÁLOGO (API + DOCUMENTACIÓN)
-            - id: catalogo-service
-              uri: lb://catalogo-service
-              predicates:
-                - Path=/api/productos/**, /v3/api-docs/catalogo
-              filters:
-                # Traducción de ruta: de /v3/api-docs/catalogo a /v3/api-docs
-                - RewritePath=/v3/api-docs/catalogo, /v3/api-docs
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
-# CONFIGURACIÓN DE SWAGGER CENTRALIZADO
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    urls:
-      - name: Catalogo
-        url: /v3/api-docs/catalogo
+    import: ${SPRING_CONFIG_IMPORT:configserver:http://localhost:8888}

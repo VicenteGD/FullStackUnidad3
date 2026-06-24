@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: catalogo-service
+  config:
+    # Esto le dice que busque la configuración en tu Config Server local (cuando estés fuera de Docker)
+    # Al usar "optional:", si el config server está apagado, no explota de inmediato.
+    import: optional:configserver:http://localhost:8888

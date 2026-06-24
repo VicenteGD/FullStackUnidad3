@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: delivery-service
+  output:
+    ansi:
+      enabled: always
+
+  datasource:
+    # Ajustado para MySQL según tu pom.xml
+    url: jdbc:mysql://localhost:3306/db_delivery?createDatabaseIfNotExist=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: false
+
+server:
+  port: 0 # Usará un puerto aleatorio disponible para no chocar con otros servicios
+
+# Eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true
+
+# Swagger / OpenAPI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    # Asumiendo que el nombre de tu contenedor de base de datos es mysql
+    url: jdbc:mysql://mysql:3306/db_delivery?createDatabaseIfNotExist=true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
